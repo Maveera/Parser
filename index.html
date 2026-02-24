@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aegis-Intelligence Unified Parser</title>
+    <meta name="description" content="FortiSIEM Custom Parser for AI-Driven Security Tools">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- PrismJS for Syntax Highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div class="background-effects">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="container nav-content">
+            <div class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span class="logo-text">AEGIS<span class="highlight">INTELLIGENCE</span></span>
+            </div>
+            <a href="https://maveera.tech" target="_blank" class="nav-link">maveera.tech</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="hero">
+            <div class="badge">Portfolio Project</div>
+            <h1 class="title">Unified Security Intelligence Parser</h1>
+            <p class="subtitle">A dynamic, client-side engine designed to automatically analyze raw security telemetry
+                and instantly generate fully-formatted XML Parsers for the FortiSIEM EventDB.</p>
+            <div class="tags">
+                <span class="tag">SOC Architecture</span>
+                <span class="tag">Regex Engineering</span>
+                <span class="tag">FortiSIEM Parsers</span>
+            </div>
+        </header>
+
+        <section class="card xml-section">
+            <div class="card-header">
+                <h2>1. Core XML Architecture Sample</h2>
+                <button class="copy-btn" id="copyXmlBtn">Copy Code</button>
+            </div>
+            <p class="section-desc">Utilizes Built-in Patterns and Advanced Logic Constructs
+                (<code>&lt;choose&gt;/&lt;switch&gt;</code>) to categorize complex security events.</p>
+            <div class="code-container">
+                <pre><code class="language-xml">&lt;parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  
+  &lt;patternDefinitions&gt;
+    &lt;pattern name="patAegisHeader"&gt;&lt;![CDATA[AEGIS-(?:GHOST|REPTILE|SENTINEL)]]&gt;&lt;/pattern&gt;
+    &lt;pattern name="patSeverity"&gt;&lt;![CDATA[LOW|MEDIUM|HIGH|CRITICAL]]&gt;&lt;/pattern&gt;
+  &lt;/patternDefinitions&gt;
+
+  &lt;eventFormatRecognizer&gt;&lt;![CDATA[AEGIS-\w+:]]&gt;&lt;/eventFormatRecognizer&gt;
+
+  &lt;parsingInstructions&gt;
+    
+    &lt;collectFieldsByRegex src="$_rawmsg"&gt;
+      &lt;regex&gt;&lt;![CDATA[&lt;_tool:patAegisHeader&gt;: &lt;_time:gPatTime&gt; &lt;hostName:gPatIpV4&gt; &lt;_msgBody:gPatMesgBody&gt;]]&gt;&lt;/regex&gt;
+    &lt;/collectFieldsByRegex&gt;
+
+    &lt;choose&gt;
+      
+      &lt;when test='matches($_tool, "AEGIS-GHOST")'&gt;
+        &lt;setEventAttribute name="eventType"&gt;Aegis-Recon-Discovery&lt;/setEventAttribute&gt;
+        &lt;collectFieldsByRegex src="$_msgBody"&gt;
+          &lt;regex&gt;&lt;![CDATA[Scan Target: &lt;destIpAddr:gPatIpV4&gt; Port: &lt;destPort:gPatInt&gt; Status: &lt;_portStatus:gPatStr&gt;]]&gt;&lt;/regex&gt;
+        &lt;/collectFieldsByRegex&gt;
+      &lt;/when&gt;
+
+      &lt;when test='matches($_tool, "AEGIS-REPTILE")'&gt;
+        &lt;setEventAttribute name="eventType"&gt;Aegis-Threat-Intel-Hit&lt;/setEventAttribute&gt;
+        &lt;collectFieldsByRegex src="$_msgBody"&gt;
+          &lt;regex&gt;&lt;![CDATA[Malicious Actor: &lt;srcIpAddr:gPatIpV4&gt; Reputation: &lt;_repScore:gPatInt&gt; Country: &lt;srcGeoCountry:gPatStr&gt;]]&gt;&lt;/regex&gt;
+        &lt;/collectFieldsByRegex&gt;
+      &lt;/when&gt;
+
+      &lt;when test='matches($_tool, "AEGIS-SENTINEL")'&gt;
+        &lt;setEventAttribute name="eventType"&gt;Aegis-AI-Phishing-Alert&lt;/setEventAttribute&gt;
+        &lt;collectFieldsByRegex src="$_msgBody"&gt;
+          &lt;regex&gt;&lt;![CDATA[Subject: &lt;mailSubject:gPatStr&gt; AI-Verdict: &lt;_verdict:patSeverity&gt; Confidence: &lt;_conf:gPatInt&gt;]]&gt;&lt;/regex&gt;
+        &lt;/collectFieldsByRegex&gt;
+      &lt;/when&gt;
+
+    &lt;/choose&gt;
+
+    &lt;setEventAttribute name="eventSeverity"&gt;
+      &lt;choose&gt;
+        &lt;when test='$_verdict == "CRITICAL" || $_repScore > 90'&gt;10&lt;/when&gt;
+        &lt;when test='$_verdict == "HIGH" || $_repScore > 75'&gt;8&lt;/when&gt;
+        &lt;otherwise&gt;2&lt;/otherwise&gt;
+      &lt;/choose&gt;
+    &lt;/setEventAttribute&gt;
+
+  &lt;/parsingInstructions&gt;
+&lt;/parser&gt;</code></pre>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>2. Management & Validation Plan</h2>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Action Plan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Viewing all Parsers</strong></td>
+                            <td>Navigate to Admin > Device Support > Parsers to confirm the XML is loaded under the
+                                "User" scope.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Understanding Order</strong></td>
+                            <td>Place this parser ABOVE generic Syslog and Windows parsers. Since it has a specific
+                                AEGIS- recognizer, it should be high in the list.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Testing the Raw Log</strong></td>
+                            <td>Use the Test Window in FortiSIEM. Paste raw logs from your appliances and verify the
+                                "Passed" status matches the generated parser fields.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Disabling/Modifying</strong></td>
+                            <td>If appliance telemetry formatting changes after firmware updates, simply generate a new
+                                parser and clone/disable the previous version.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>3. Appendix: Implementation Details</h2>
+            <div class="details-grid">
+                <div class="detail-box">
+                    <div class="detail-icon">🧬</div>
+                    <h3>Built-in Patterns</h3>
+                    <p>Utilized <code>gPatIpV4</code> and <code>gPatTime</code>. This ensures that even if IP formatting
+                        changes slightly, the FortiSIEM compiled C++ code will still capture it flawlessly.</p>
+                </div>
+                <div class="detail-box">
+                    <div class="detail-icon">⚙️</div>
+                    <h3>Built-in Functions</h3>
+                    <p>The <code>eventSeverity</code> mapping uses a nested <code>&lt;choose&gt;</code> acting as a
+                        logic engine, converting severity strings (e.g., CRITICAL) into numerical values (10) required
+                        for the SIEM's risk engine.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="card" id="simulator-section">
+            <h2>4. Custom Parser Generator</h2>
+            <p class="section-desc">Paste your RAW log below. The engine will analyze the key-value pairs and
+                automatically generate a FortiSIEM XML Parser for it.</p>
+
+            <div class="simulator-controls">
+                <textarea id="rawLogInput" class="log-input" rows="8"
+                    placeholder="Paste your raw log here...
+Example:
+<189>logver=704092829 timestamp=1771954996 devname=&#34;FW-01&#34; vd=&#34;root&#34; date=&#34;2026-02-24&#34; time=&#34;23:13:16&#34; srcip=&#34;192.168.0.101&#34; action=&#34;accept&#34;"></textarea>
+                <button id="generateBtn" class="primary-btn">
+                    <span class="btn-icon">⚡</span> Generate Parser
+                </button>
+            </div>
+
+            <!-- Loading Symbol -->
+            <div id="loadingContainer" class="loading-container" style="display: none;">
+                <div class="spinner"></div>
+                <p>Analyzing log structure and generating XML...</p>
+            </div>
+
+            <!-- Generated Output Area -->
+            <div id="outputContainer" class="output-container" style="display: none;">
+                <div class="card-header border-none">
+                    <h3>Generated XML Parser</h3>
+                    <button class="copy-btn" id="copyGenXmlBtn">Copy Code</button>
+                </div>
+                <div class="code-container">
+                    <pre><code class="language-xml" id="generatedXmlCode"></code></pre>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Aegis Intelligence. Designed by <a href="https://maveera.tech" target="_blank">maveera.tech</a>.
+        </p>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-xml.min.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
