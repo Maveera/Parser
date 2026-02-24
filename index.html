@@ -166,10 +166,10 @@
                 automatically generate a FortiSIEM XML Parser for it.</p>
 
             <div class="simulator-controls">
-                <textarea id="rawLogInput" class="log-input" rows="8"
-                    placeholder="Paste your raw log here...
+                <textarea id="rawLogInput" class="log-input" rows="8" placeholder="Paste your raw logs here (one per line)...
 Example:
-<189>logver=704092829 timestamp=1771954996 devname=&#34;FW-01&#34; vd=&#34;root&#34; date=&#34;2026-02-24&#34; time=&#34;23:13:16&#34; srcip=&#34;192.168.0.101&#34; action=&#34;accept&#34;"></textarea>
+<189>logver=1 timestamp=111 srcip=1.1.1.1 action=deny
+<189>logver=2 timestamp=222 dstip=1.2.3.4 action=accept"></textarea>
                 <button id="generateBtn" class="primary-btn">
                     <span class="btn-icon">⚡</span> Execute Parser
                 </button>
@@ -198,6 +198,7 @@ Example:
                     <table class="data-table mapping-table" id="mappingTable">
                         <thead>
                             <tr>
+                                <th>Log #</th>
                                 <th>Raw Log Key</th>
                                 <th>FortiSIEM Attribute</th>
                                 <th>Detected Pattern</th>
