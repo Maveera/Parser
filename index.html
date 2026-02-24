@@ -171,7 +171,7 @@
 Example:
 <189>logver=704092829 timestamp=1771954996 devname=&#34;FW-01&#34; vd=&#34;root&#34; date=&#34;2026-02-24&#34; time=&#34;23:13:16&#34; srcip=&#34;192.168.0.101&#34; action=&#34;accept&#34;"></textarea>
                 <button id="generateBtn" class="primary-btn">
-                    <span class="btn-icon">⚡</span> Generate Parser
+                    <span class="btn-icon">⚡</span> Execute Parser
                 </button>
             </div>
 
@@ -190,13 +190,32 @@ Example:
                 <div class="code-container">
                     <pre><code class="language-xml" id="generatedXmlCode"></code></pre>
                 </div>
+
+                <div class="card-header border-none" style="margin-top: 2.5rem;">
+                    <h3>Parsed Attribute Mapping</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table mapping-table" id="mappingTable">
+                        <thead>
+                            <tr>
+                                <th>Raw Log Key</th>
+                                <th>FortiSIEM Attribute</th>
+                                <th>Detected Pattern</th>
+                                <th>Sample Value</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mappingBody">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </section>
 
     </main>
 
     <footer class="footer">
-        <p>&copy; 2026 Aegis Intelligence. Designed by <a href="https://maveera.tech" target="_blank">maveera.tech</a>.
+        <p>&copy; 2026 Parser Intelligence. Designed by <a href="https://maveera.tech" target="_blank">Maveera</a>.
         </p>
     </footer>
 

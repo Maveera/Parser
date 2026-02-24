@@ -6,9 +6,10 @@ This portfolio project provides a beautiful, interactive interface where securit
 
 ## ✨ Features
 - **Client-Side Generation**: Entirely driven by JavaScript, requiring no backend servers or data transmission (crucial for dealing with sensitive internal logs).
-- **Log Heuristic Engine**: Automatically parses Key-Value (KV) mappings out of raw logs and maps them to standard EventDB attributes.
-- **Dynamic Typing**: Automatically detects data types from values (e.g. `192.168.1.1` becomes `gPatIpV4`, while purely numeric ids become `gPatInt`).
-- **Standardized Mapping Framework**: Follows Fortinet best practices, mapping generic fields like `srcip` directly into standardized `srcIpAddr` `<setEventAttribute>` syntax.
+- **Multi-Format Intelligence**: Automatically parses both standard Key-Value (KV) Syslogs *and* direct JSON payloads seamlessly.
+- **Dynamic Typing**: Automatically detects data types from values (e.g., `192.168.1.1` becomes `gPatIpV4`, while numeric IDs become `gPatInt`).
+- **Human-Friendly Attribute Mapping**: Includes a massive runtime dictionary mapping over 40+ common telemetry keys (like `vd`, `devname`, `srcip`) directly into perfectly formatted, Title-Case SIEM attributes (e.g., `Virtual Domain`, `Device Name`, `Source IP`).
+- **Visual Mapping Table**: Outputs a responsive Data Table dynamically confirming exactly how every parsed raw key was formatted and assigned for instant verification. 
 - **Syntax Highlighting**: Built-in PrismJS provides gorgeous XML rendering.
 
 ## 🚀 How to Use It
