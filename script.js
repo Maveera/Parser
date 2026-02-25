@@ -56,17 +56,16 @@ document.addEventListener('DOMContentLoaded', () => {
         generateBtn.addEventListener('click', () => {
             const rawLog = rawLogInput.value.trim();
             if (!rawLog) return;
-            outputContainer.style.display = 'none';
-            loadingContainer.style.display = 'block';
 
-            setTimeout(() => {
-                const result = analyzeLogAndGenerateXML(rawLog);
-                generatedXmlCode.textContent = result.xml;
-                Prism.highlightElement(generatedXmlCode);
-                renderMappingTable(result.mappings);
-                loadingContainer.style.display = 'none';
-                outputContainer.style.display = 'block';
-            }, 1500);
+            outputContainer.style.display = 'none';
+
+            // Generate parser immediately without any artificial delay
+            const result = analyzeLogAndGenerateXML(rawLog);
+            generatedXmlCode.textContent = result.xml;
+            Prism.highlightElement(generatedXmlCode);
+            renderMappingTable(result.mappings);
+
+            outputContainer.style.display = 'block';
         });
     }
 
