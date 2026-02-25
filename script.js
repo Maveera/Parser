@@ -177,9 +177,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (isJson) {
-                    regexMappingStr += `"${pair.key}":\\s*"?<${pair.key}:${patType}>"?\\s*,?\\s*`;
+                    regexMappingStr += `"${pair.key}":\\s*"?<_${pair.key}:${patType}>"?\\s*,?\\s*`;
                 } else {
-                    regexMappingStr += `${pair.key}=<${pair.key}:${patType}> `;
+                    regexMappingStr += `${pair.key}=<_${pair.key}:${patType}>\\s+`;
                 }
 
                 attributeAssignmentsStr += `    <setEventAttribute attr="${siemAttr}">$_${pair.key}</setEventAttribute>\n`;
@@ -189,7 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
             regexMappingStr = `<_msgBody:gPatMesgBody>`;
         }
 
-        regexMappingStr = regexMappingStr.trim().replace(/,\\s*$/, '');
+        // Clean trailing space or comma patterns
+        regexMappingStr = regexMappingStr.trim().replace(/(?:,\\s*|\\s\+)$/, '');
         let eventTypeStr = isJson ? 'Auto-Detected-JSON' : 'Auto-Detected-KV-Log';
 
         let xmlTemplate = `<?xml version="1.0" encoding="UTF-8"?>

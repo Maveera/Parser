@@ -64,29 +64,29 @@
   &lt;parsingInstructions&gt;
     
     &lt;collectFieldsByRegex src="$_rawmsg"&gt;
-      &lt;regex&gt;&lt;![CDATA[&lt;_tool:patAegisHeader&gt;: &lt;_time:gPatTime&gt; &lt;hostName:gPatIpV4&gt; &lt;_msgBody:gPatMesgBody&gt;]]&gt;&lt;/regex&gt;
+      &lt;regex&gt;&lt;![CDATA[&lt;_tool:patAegisHeader&gt;:\s+&lt;_time:gPatTime&gt;\s+&lt;_hostName:gPatIpV4Dot&gt;\s+&lt;_msgBody:gPatMesgBody&gt;]]&gt;&lt;/regex&gt;
     &lt;/collectFieldsByRegex&gt;
 
     &lt;choose&gt;
       
       &lt;when test='matches($_tool, "AEGIS-GHOST")'&gt;
-        &lt;setEventAttribute name="eventType"&gt;Aegis-Recon-Discovery&lt;/setEventAttribute&gt;
+        &lt;setEventAttribute attr="eventType"&gt;Aegis-Recon-Discovery&lt;/setEventAttribute&gt;
         &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Scan Target: &lt;destIpAddr:gPatIpV4&gt; Port: &lt;destPort:gPatInt&gt; Status: &lt;_portStatus:gPatStr&gt;]]&gt;&lt;/regex&gt;
+          &lt;regex&gt;&lt;![CDATA[Scan Target:\s+&lt;_destIpAddr:gPatIpV4Dot&gt;\s+Port:\s+&lt;_destPort:gPatInt&gt;\s+Status:\s+&lt;_portStatus:gPatStr&gt;]]&gt;&lt;/regex&gt;
         &lt;/collectFieldsByRegex&gt;
       &lt;/when&gt;
 
       &lt;when test='matches($_tool, "AEGIS-REPTILE")'&gt;
-        &lt;setEventAttribute name="eventType"&gt;Aegis-Threat-Intel-Hit&lt;/setEventAttribute&gt;
+        &lt;setEventAttribute attr="eventType"&gt;Aegis-Threat-Intel-Hit&lt;/setEventAttribute&gt;
         &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Malicious Actor: &lt;srcIpAddr:gPatIpV4&gt; Reputation: &lt;_repScore:gPatInt&gt; Country: &lt;srcGeoCountry:gPatStr&gt;]]&gt;&lt;/regex&gt;
+          &lt;regex&gt;&lt;![CDATA[Malicious Actor:\s+&lt;_srcIpAddr:gPatIpV4Dot&gt;\s+Reputation:\s+&lt;_repScore:gPatInt&gt;\s+Country:\s+&lt;_srcGeoCountry:gPatStr&gt;]]&gt;&lt;/regex&gt;
         &lt;/collectFieldsByRegex&gt;
       &lt;/when&gt;
 
       &lt;when test='matches($_tool, "AEGIS-SENTINEL")'&gt;
-        &lt;setEventAttribute name="eventType"&gt;Aegis-AI-Phishing-Alert&lt;/setEventAttribute&gt;
+        &lt;setEventAttribute attr="eventType"&gt;Aegis-AI-Phishing-Alert&lt;/setEventAttribute&gt;
         &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Subject: &lt;mailSubject:gPatStr&gt; AI-Verdict: &lt;_verdict:patSeverity&gt; Confidence: &lt;_conf:gPatInt&gt;]]&gt;&lt;/regex&gt;
+          &lt;regex&gt;&lt;![CDATA[Subject:\s+&lt;_mailSubject:gPatStr&gt;\s+AI-Verdict:\s+&lt;_verdict:patSeverity&gt;\s+Confidence:\s+&lt;_conf:gPatInt&gt;]]&gt;&lt;/regex&gt;
         &lt;/collectFieldsByRegex&gt;
       &lt;/when&gt;
 
