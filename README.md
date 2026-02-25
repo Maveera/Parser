@@ -6,9 +6,8 @@ This portfolio project provides a beautiful, interactive interface where securit
 
 ## ✨ Features
 - **Client-Side Generation**: Entirely driven by JavaScript, requiring no backend servers or data transmission (crucial for dealing with sensitive internal logs).
-- **Multi-Format Intelligence**: Automatically parses both standard Key-Value (KV) Syslogs *and* direct JSON payloads seamlessly.
-- **Dynamic Typing**: Automatically detects data types from values (e.g., `192.168.1.1` becomes `gPatIpV4`, while numeric IDs become `gPatInt`).
-- **Human-Friendly Attribute Mapping**: Includes a massive runtime dictionary mapping over 40+ common telemetry keys (like `vd`, `devname`, `srcip`) directly into perfectly formatted, Title-Case SIEM attributes (e.g., `Virtual Domain`, `Device Name`, `Source IP`).
+- **Unified Multi-Log Output**: Paste dozens of different log variations simultaneously. The engine will intelligently scrape and deduplicate every single unique key across all examples, building one perfectly comprehensive XML parser schema encompassing all possible telemetry.
+- **Direct SIEM Attribute Mapping**: Includes a massive runtime dictionary mapping common telemetry keys directly into valid FortiSIEM fields (e.g., `srcIpAddr`, `hostName`, `msg`) for out-of-the-box perfectly matching SIEM XML schemas.
 - **Visual Mapping Table**: Outputs a responsive Data Table dynamically confirming exactly how every parsed raw key was formatted and assigned for instant verification. 
 - **Syntax Highlighting**: Built-in PrismJS provides gorgeous XML rendering.
 
