@@ -88,6 +88,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const siemFieldMap = {
+        'logver': 'Log Version',
+        'apprisk': 'Application Risk',
+        'srcip': 'Source IP',
+        'dstip': 'Destination IP',
+        'srcport': 'Source Port',
+        'dstport': 'Destination Port',
+        'action': 'Action',
+        'proto': 'Protocol',
+        'duration': 'Duration',
+        'timestamp': 'Timestamp',
+        'unknownfield': 'Unknown Field'
+    };
+
     function analyzeLogAndGenerateXML(rawLogsText) {
         let kvPairs = [];
         let isJson = false;
@@ -155,7 +169,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (siemFieldMap[pair.key.toLowerCase()]) {
                     siemAttr = siemFieldMap[pair.key.toLowerCase()];
                 } else {
-                    siemAttr = pair.key.replace(/_([a-z])/g, function (g) { return g[1].toUpperCase(); });
+                    // split camelCase, convert underscores to spaces, and capitalize words
+                    siemAttr = pair.key
+                        .replace(/([a-z])([A-Z])/g, '$1 $2')
+                        .replace(/_/g, ' ')
+                        .replace(/\b\w/g, c => c.toUpperCase());
                 }
 
                 if (isJson) {

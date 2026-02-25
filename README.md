@@ -8,6 +8,7 @@ This portfolio project provides a beautiful, interactive interface where securit
 - **Client-Side Generation**: Entirely driven by JavaScript, requiring no backend servers or data transmission (crucial for dealing with sensitive internal logs).
 - **Unified Multi-Log Output**: Paste dozens of different log variations simultaneously. The engine will intelligently scrape and deduplicate every single unique key across all examples, building one perfectly comprehensive XML parser schema encompassing all possible telemetry.
 - **Direct SIEM Attribute Mapping**: Includes a massive runtime dictionary mapping common telemetry keys directly into valid FortiSIEM fields (e.g., `srcIpAddr`, `hostName`, `msg`) for out-of-the-box perfectly matching SIEM XML schemas.
+- **Smart Fallback Formatting**: When unrecognized attributes are parsed, the engine instantly splits camelCase, converts underscores to spaces, and capitalizes words to ensure the FortiSIEM UI displays human-readable attributes rather than broken database keys.
 - **Visual Mapping Table**: Outputs a responsive Data Table dynamically confirming exactly how every parsed raw key was formatted and assigned for instant verification. 
 - **Syntax Highlighting**: Built-in PrismJS provides gorgeous XML rendering.
 
