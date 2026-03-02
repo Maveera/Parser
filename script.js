@@ -162,8 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (kvPairs.length > 0) {
             kvPairs.forEach(pair => {
                 let patType = "gPatStr";
-                if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(pair.val)) patType = "gPatIpV4Dot";
-                else if (/^\d+$/.test(pair.val)) patType = "gPatInt";
+                if (/^\d{1,3}(?:\.\d{1,3}){3}$/.test(pair.val)) {
+                    patType = "gPatIpV4Dot";
+                } else if (/^\d+$/.test(pair.val)) {
+                    patType = "gPatInt";
+                } else if (pair.key === 'vwlquality') {
+                    patType = "patFormat";
+                } else if (/\s/.test(pair.val)) {
+                    patType = "gPatSentence";
+                }
 
                 let siemAttr = pair.key;
                 if (siemFieldMap[pair.key.toLowerCase()]) {
@@ -179,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isJson) {
                     regexMappingStr += `"${pair.key}":\\s*"?<_${pair.key}:${patType}>"?\\s*,?\\s*`;
                 } else {
-                    regexMappingStr += `${pair.key}=<_${pair.key}:${patType}>\\s+`;
+                    regexMappingStr += `${pair.key}="?<_${pair.key}:${patType}>"?\\s+`;
                 }
 
                 attributeAssignmentsStr += `    <setEventAttribute attr="${siemAttr}">$_${pair.key}</setEventAttribute>\n`;
@@ -191,16 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Clean trailing space or comma patterns
         regexMappingStr = regexMappingStr.trim().replace(/(?:,\\s*|\\s\+)$/, '');
-        let eventTypeStr = isJson ? 'Auto-Detected-JSON' : 'Auto-Detected-KV-Log';
+        let eventTypeStr = isJson ? 'Auto-Detected-JSON' : 'Fortinet-FortiGate-Traffic';
+        let eventFormatRecognizerStr = isJson ? '.*' : 'devname="?BLUEPINE';
 
         let xmlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <patternDefinitions>
-    <pattern name="patFormat"><![CDATA[.*?]]></pattern>
+    <pattern name="patFormat"><![CDATA[[^"]+]]></pattern>
   </patternDefinitions>
 
-  <!-- Auto-detected event format -->
-  <eventFormatRecognizer><![CDATA[.*]]></eventFormatRecognizer>
+  <!-- Specific event format recognizer for BLUEPINE FortiGate -->
+  <eventFormatRecognizer><![CDATA[${eventFormatRecognizerStr}]]></eventFormatRecognizer>
 
   <parsingInstructions>
     

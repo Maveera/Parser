@@ -163,14 +163,15 @@
 
         <section class="card" id="simulator-section">
             <h2>4. Custom Parser Generator</h2>
-            <p class="section-desc">Paste your RAW log below. The engine will analyze the key-value pairs and
+            <p class="section-desc">Paste your RAW FortiGate traffic log below. The engine will analyze the key-value
+                pairs and
                 automatically generate a FortiSIEM XML Parser for it.</p>
 
             <div class="simulator-controls">
-                <textarea id="rawLogInput" class="log-input" rows="8" placeholder="Paste your raw logs here (one per line)...
+                <textarea id="rawLogInput" class="log-input" rows="8"
+                    placeholder="Paste your raw FortiGate traffic logs here (one per line)...
 Example:
-<189>logver=1 timestamp=111 srcip=1.1.1.1 action=deny
-<189>logver=2 timestamp=222 dstip=1.2.3.4 action=accept"></textarea>
+logver=70 timestamp=1711234567 devname=&#34;BLUEPINE_GGNE_FG101F&#34; devid=&#34;FG101FTK23000000&#34; vd=&#34;root&#34; date=&#34;2024-03-24&#34; time=&#34;10:36:07&#34; ..."></textarea>
                 <button id="generateBtn" class="primary-btn">
                     <span class="btn-icon">⚡</span> Execute Parser
                 </button>
