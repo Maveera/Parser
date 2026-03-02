@@ -184,9 +184,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 if (isJson) {
-                    regexMappingStr += `"${pair.key}":\\s*"?<_${pair.key}:${patType}>"?\\s*,?\\s*`;
+                    regexMappingStr += `"${pair.key}":\\s*"<_${pair.key}:${patType}>"\\s*,?\\s*`;
                 } else {
-                    regexMappingStr += `${pair.key}="?<_${pair.key}:${patType}>"?\\s+`;
+                    if (patType === "gPatStr" || patType === "gPatSentence" || patType === "patFormat") {
+                        // String types strictly require quotes
+                        regexMappingStr += `${pair.key}="<_${pair.key}:${patType}>"\\s+`;
+                    } else {
+                        // Numeric and IP types strictly do NOT allow quotes
+                        regexMappingStr += `${pair.key}=<_${pair.key}:${patType}>\\s+`;
+                    }
                 }
 
                 attributeAssignmentsStr += `    <setEventAttribute attr="${siemAttr}">$_${pair.key}</setEventAttribute>\n`;
@@ -199,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Clean trailing space or comma patterns
         regexMappingStr = regexMappingStr.trim().replace(/(?:,\\s*|\\s\+)$/, '');
         let eventTypeStr = isJson ? 'Auto-Detected-JSON' : 'Fortinet-FortiGate-Traffic';
-        let eventFormatRecognizerStr = isJson ? '.*' : 'devname="?BLUEPINE';
+        let eventFormatRecognizerStr = isJson ? '.*' : 'devname="BLUEPINE';
 
         let xmlTemplate = `<?xml version="1.0" encoding="UTF-8"?>
 <parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
