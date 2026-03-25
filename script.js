@@ -315,16 +315,20 @@ document.addEventListener('DOMContentLoaded', () => {
       // Map detected keys into a small allowlist of known FortiSIEM attributes.
       // This is the safe default to avoid validation failures.
       const attrRules = [
-        { keys: ['devname'], attr: 'deviceName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
-        { keys: ['hostname', 'hostName'], attr: 'hostName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
+        // FortiGate "devname" is the device hostname/id; map it to FortiSIEM hostName.
+        { keys: ['devname', 'hostname', 'hostName'], attr: 'hostName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
         { keys: ['hostipaddr'], attr: 'hostIpAddr', patterns: ['gPatIpV4Dot'] },
 
+        // Core network attributes (FortiSIEM standard)
         { keys: ['srcip'], attr: 'srcIpAddr', patterns: ['gPatIpV4Dot'] },
         { keys: ['dstip'], attr: 'destIpAddr', patterns: ['gPatIpV4Dot'] },
         { keys: ['srcport'], attr: 'srcIpPort', patterns: ['gPatInt'] },
         { keys: ['dstport'], attr: 'destIpPort', patterns: ['gPatInt'] },
 
-        { keys: ['proto'], attr: 'protocol', patterns: ['gPatInt', 'gPatStr'] },
+        // FortiGate "proto" is numeric IP protocol => ipProto in FortiSIEM.
+        { keys: ['proto'], attr: 'ipProto', patterns: ['gPatInt'] },
+
+        // Policy/action fields (commonly present in FortiSIEM)
         { keys: ['action'], attr: 'action', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
         { keys: ['policyname'], attr: 'policyName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
 
