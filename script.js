@@ -47,7 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return 'gPatStr';
     if (/^\d{2}:\d{2}:\d{2}$/.test(value)) return 'gPatStr';
     if (key === 'vwlquality') return 'patFormat';
-    if (/\s/.test(value)) return 'patSentence';
+    // For multi-word string fields, prefer the built-in gPatSentence.
+    // This avoids needing custom patSentence definitions.
+    if (/\s/.test(value)) return 'gPatSentence';
     return 'gPatStr';
   }
 
