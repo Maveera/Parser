@@ -258,7 +258,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const parserName = parserNameInput.value.trim() || 'Custom-Generic-Parser';
     const deviceType = deviceTypeInput.value.trim() || 'Generic-Device';
-    const eventRecognizer = eventRecognizerInput.value.trim() || '.*';
+
+    // Prefer a more specific recognizer when the user keeps the default ".*".
+    // This helps FortiSIEM pick the correct parser via eventFormatRecognizer.
+    const userRecognizerRaw = eventRecognizerInput.value.trim();
+    let eventRecognizer = userRecognizerRaw || '.*';
+    if (eventRecognizer === '.*' || eventRecognizer === '') {
+      const mLabel = sampleLine.match(/^\[([^\]]+)\]:/);
+      if (sawBracketStyle && mLabel) {
+        const label = mLabel[1];
+        eventRecognizer = `\\[${escapeRegexLiteral(label)}\\]:`;
+      } else {
+        const devnameField = fields.find(f => String(f.key).toLowerCase() === 'devname');
+        if (devnameField) {
+          const dev = Array.from(devnameField.values)[0] || '';
+          eventRecognizer = `devname=\"${escapeRegexLiteral(dev)}\"`;
+        } else {
+          const typeField = fields.find(f => String(f.key).toLowerCase() === 'type');
+          if (typeField) {
+            const t = Array.from(typeField.values)[0] || '';
+            eventRecognizer = `type=\"${escapeRegexLiteral(t)}\"`;
+          }
+        }
+      }
+    }
 
     const usesSentence = fields.some(f => f.patternName === 'patSentence');
     const usesFormat = fields.some(f => f.patternName === 'patFormat');
@@ -302,8 +325,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const safeMapping = safeMappingInput ? safeMappingInput.checked : true;
     const mapAllKeys = mapAllKeysInput ? mapAllKeysInput.checked : false;
+    const effectiveMapAllKeys = mapAllKeys && !safeMapping;
 
-    if (mapAllKeys) {
+    if (effectiveMapAllKeys) {
       // Map every detected key to an event attribute name derived from the key.
       // You must create these attributes in FortiSIEM first, otherwise validation will fail.
       fields.forEach(f => {
