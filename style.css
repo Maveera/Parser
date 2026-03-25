@@ -418,6 +418,39 @@ textarea {
   border-radius: 6px;
 }
 
+/* ===== Regex101 Debug ===== */
+.regex101-section {
+  margin-top: 22px;
+}
+
+.regex101-sub {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.code-wrapper-tight {
+  margin-top: 0;
+}
+
+.code-block-tight {
+  max-height: 240px;
+}
+
+.regex101-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.regex101-status {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 /* ===== Footer ===== */
 .footer {
   margin-top: 32px;

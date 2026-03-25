@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const mapAllKeysInput = document.getElementById('mapAllKeys');
   const errorBox = document.getElementById('errorBox');
   const toast = document.getElementById('toast');
+  const regex101Debug = document.getElementById('regex101Debug');
+  const regex101Status = document.getElementById('regex101Status');
+  const copyRegex101Btn = document.getElementById('copyRegex101Btn');
 
   let lastGeneratedXml = '';
   let lastGeneratedBody = '';
@@ -95,13 +98,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const m = re.exec(sampleLine);
-    if (!m) return { matched: false, captures: {} };
+    if (!m) return { matched: false, captures: {}, jsSource };
 
     const captures = {};
     for (let i = 0; i < vars.length; i++) {
       captures[vars[i]] = m[i + 1] || '';
     }
-    return { matched: true, captures };
+    return { matched: true, captures, jsSource };
   }
 
   function preCheckFortiSiemRegexBody(regexBody, usesPatSentence, usesPatFormat) {
@@ -356,7 +359,7 @@ ${setLines.join('\n')}
   </parsingInstructions>
 </parser>`;
 
-    return { xml, body: extractParserBody(xml), fields };
+    return { xml, body: extractParserBody(xml), fields, regex101Js: matchRes.jsSource };
   }
 
   function renderMappings(fields) {
@@ -394,14 +397,17 @@ ${setLines.join('\n')}
       }
 
       try {
-        const { xml, body, fields } = buildParserXml(rawText);
+        const { xml, body, fields, regex101Js } = buildParserXml(rawText);
         lastGeneratedXml = xml;
         lastGeneratedBody = body;
         xmlOutput.textContent = xml;
         renderMappings(fields);
+        if (regex101Debug) regex101Debug.textContent = regex101Js || '';
+        if (regex101Status) regex101Status.textContent = 'Matched sample (local regex check)';
         showToast('Parser generated successfully');
       } catch (e) {
         showError(e.message || 'Failed to generate parser.');
+        if (regex101Status) regex101Status.textContent = 'Not generated (pre-check failed)';
       }
     });
   }
@@ -422,6 +428,16 @@ ${setLines.join('\n')}
       const body = text.includes('eventFormatRecognizer') ? extractParserBody(text) : text;
       navigator.clipboard.writeText(body).then(() => {
         showToast('Parser body copied (ready for FortiSIEM)');
+      }).catch(() => {});
+    });
+  }
+
+  if (copyRegex101Btn) {
+    copyRegex101Btn.addEventListener('click', () => {
+      const txt = regex101Debug ? regex101Debug.textContent : '';
+      if (!txt) return;
+      navigator.clipboard.writeText(txt).then(() => {
+        showToast('JS regex copied');
       }).catch(() => {});
     });
   }
