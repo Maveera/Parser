@@ -52,6 +52,58 @@ document.addEventListener('DOMContentLoaded', () => {
     return String(str).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&');
   }
 
+  function jsRegexForFortiPattern(patternName) {
+    // Approximate FortiSIEM pattern behavior for local "regex match check".
+    // This is only used for pre-checking that the generated regex can match the sample.
+    switch (patternName) {
+      case 'gPatInt':
+        return '\\d+';
+      case 'gPatIpV4Dot':
+        return '(?:\\d{1,3}\\.){3}\\d{1,3}';
+      case 'gPatStr':
+        return '[^\\s"]+';
+      case 'gPatSentence':
+      case 'patSentence':
+        // Non-greedy sentence capture
+        return '.+?';
+      case 'patFormat':
+        // Typically used inside quotes for FortiGate vwlquality
+        return '[^"]+';
+      default:
+        return '[^\\s]+';
+    }
+  }
+
+  function testRegexAgainstSample(regexBody, sampleLine) {
+    // Convert the FortiSIEM placeholder tokens into JS regex capture groups
+    // so we can verify the regex matches the sample.
+    const placeholderRe = /<(_[A-Za-z0-9_]+):([A-Za-z0-9_]+)>/g;
+
+    const vars = [];
+    let jsSource = regexBody.replace(placeholderRe, (full, varName, patName) => {
+      vars.push(varName);
+      return `(${jsRegexForFortiPattern(patName)})`;
+    });
+
+    // Remove accidental unescaped whitespace issues: FortiSIEM regex uses \s+;
+    // leave them as-is for JS regex compilation.
+    let re;
+    try {
+      re = new RegExp(jsSource);
+    } catch (e) {
+      throw new Error('Regex match test failed to compile as JavaScript RegExp.');
+    }
+
+    const m = re.exec(sampleLine);
+    if (!m) return { matched: false, captures: {} };
+
+    const captures = {};
+    for (let i = 0; i < vars.length; i++) {
+      captures[vars[i]] = m[i + 1] || '';
+    }
+    return { matched: true, captures };
+  }
+
   function preCheckFortiSiemRegexBody(regexBody, usesPatSentence, usesPatFormat) {
     // Validate placeholder syntax and pattern names before we emit XML.
     // This prevents FortiSIEM validation failures from unsupported pattern names
@@ -110,6 +162,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const fieldMap = new Map();
     let sawBracketStyle = false;
     const sawPriHeader = lines.some(l => /^<\d+>/.test(l));
+
+    // Use the first non-empty raw line for local regex match pre-check.
+    const sampleLine = lines[0];
 
     lines.forEach(line => {
       let working = line;
@@ -176,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const regexParts = [];
       if (hasSyslogPrefixInput.checked || sawPriHeader) {
         // Allow FortiGate logs with or without syslog PRI prefix (<189>...)
-        regexParts.push('(<\\d+>\\s*)?');
+        regexParts.push('(?:<\\d+>\\s*)?');
       }
       fields.forEach((field, index) => {
         const key = field.key;
@@ -216,6 +271,20 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     preCheckFortiSiemRegexBody(regexBody, usesSentence, usesFormat);
+
+    // Local "does it match my sample" check.
+    // If it fails, FortiSIEM validation/test will almost certainly fail too.
+    const matchRes = testRegexAgainstSample(regexBody, sampleLine);
+    if (!matchRes.matched) {
+      throw new Error('Regex match check failed against your sample log line.');
+    }
+
+    // Update field samples from capture groups (so the mapping table reflects actual matches).
+    fields.forEach(f => {
+      if (f.varName && matchRes.captures[`_${f.varName}`]) {
+        f.sample = matchRes.captures[`_${f.varName}`];
+      }
+    });
 
     // Set msg to the raw message by default (always available).
     // If we detect a more meaningful field (like vwlquality / phLogDetail), prefer it.
