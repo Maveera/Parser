@@ -142,9 +142,21 @@
           <div class="code-wrapper code-wrapper-tight">
             <pre class="code-block code-block-tight"><code id="regex101Debug"></code></pre>
           </div>
+          <div class="form-group" style="margin-top: 14px;">
+            <label for="fortiRegexEdit" style="display:block;margin-bottom:6px;font-size:13px;color:var(--text-muted);font-weight:600;">
+              Edit FortiSIEM &lt;regex&gt; body (placeholders allowed)
+            </label>
+            <textarea id="fortiRegexEdit" rows="5" placeholder="e.g. logver=<_logver:gPatInt>\s+timestamp=<_timestamp:gPatInt>\s+..."></textarea>
+            <div class="regex101-actions" style="margin-top: 10px;">
+              <button id="testEditedRegexBtn" class="btn btn-ghost btn-accent" type="button">
+                Test Edited Regex
+              </button>
+              <span id="regex101Status" class="regex101-status">Not generated yet</span>
+            </div>
+          </div>
           <div class="regex101-actions">
             <button id="copyRegex101Btn" class="btn btn-ghost btn-accent" type="button">Copy JS Regex</button>
-            <span id="regex101Status" class="regex101-status">Not generated yet</span>
+            <span class="regex101-hint">Uses local sample match (like regex101).</span>
           </div>
         </div>
       </section>

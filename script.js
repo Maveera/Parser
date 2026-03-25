@@ -16,9 +16,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const regex101Debug = document.getElementById('regex101Debug');
   const regex101Status = document.getElementById('regex101Status');
   const copyRegex101Btn = document.getElementById('copyRegex101Btn');
+  const fortiRegexEdit = document.getElementById('fortiRegexEdit');
+  const testEditedRegexBtn = document.getElementById('testEditedRegexBtn');
 
   let lastGeneratedXml = '';
   let lastGeneratedBody = '';
+  let lastSampleLine = '';
+  let lastRegexBody = '';
 
   function showToast(message) {
     toast.textContent = message;
@@ -361,7 +365,7 @@ ${setLines.join('\n')}
   </parsingInstructions>
 </parser>`;
 
-    return { xml, body: extractParserBody(xml), fields, regex101Js: matchRes.jsSource };
+    return { xml, body: extractParserBody(xml), fields, regex101Js: matchRes.jsSource, regexBody, sampleLine };
   }
 
   function renderMappings(fields) {
@@ -399,17 +403,55 @@ ${setLines.join('\n')}
       }
 
       try {
-        const { xml, body, fields, regex101Js } = buildParserXml(rawText);
+        const { xml, body, fields, regex101Js, regexBody, sampleLine } = buildParserXml(rawText);
         lastGeneratedXml = xml;
         lastGeneratedBody = body;
         xmlOutput.textContent = xml;
         renderMappings(fields);
         if (regex101Debug) regex101Debug.textContent = regex101Js || '';
         if (regex101Status) regex101Status.textContent = 'Matched sample (local regex check)';
+        lastSampleLine = sampleLine || '';
+        lastRegexBody = regexBody || '';
+        if (fortiRegexEdit) fortiRegexEdit.value = regexBody || '';
         showToast('Parser generated successfully');
       } catch (e) {
         showError(e.message || 'Failed to generate parser.');
         if (regex101Status) regex101Status.textContent = 'Not generated (pre-check failed)';
+      }
+    });
+  }
+
+  if (testEditedRegexBtn && fortiRegexEdit) {
+    testEditedRegexBtn.addEventListener('click', () => {
+      clearError();
+      if (!lastSampleLine) {
+        showError('Generate once first so we have a sample line to test against.');
+        return;
+      }
+      const edited = (fortiRegexEdit.value || '').trim();
+      if (!edited) {
+        showError('Edit FortiSIEM <regex> body cannot be empty.');
+        return;
+      }
+
+      const usesPatSentence = edited.includes(':patSentence>');
+      const usesPatFormat = edited.includes(':patFormat>');
+
+      try {
+        preCheckFortiSiemRegexBody(edited, usesPatSentence, usesPatFormat);
+        const res = testRegexAgainstSample(edited, lastSampleLine);
+        if (!res.matched) {
+          if (regex101Status) regex101Status.textContent = 'Edited regex did NOT match sample (local check)';
+          if (regex101Debug) regex101Debug.textContent = res.jsSource || '';
+          showToast('Edited regex did not match sample');
+          return;
+        }
+        if (regex101Status) regex101Status.textContent = 'Edited regex matched sample (local check)';
+        if (regex101Debug) regex101Debug.textContent = res.jsSource || '';
+        showToast('Edited regex matched sample');
+      } catch (e) {
+        showError(e.message || 'Edited regex validation/match failed.');
+        if (regex101Status) regex101Status.textContent = 'Edited regex failed pre-check';
       }
     });
   }
