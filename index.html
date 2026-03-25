@@ -1,230 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aegis-Intelligence Unified Parser</title>
-    <meta name="description" content="FortiSIEM Custom Parser for AI-Driven Security Tools">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <!-- PrismJS for Syntax Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FortiSIEM Parser Generator</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="background-effects">
-        <div class="glow-orb orb-1"></div>
-        <div class="glow-orb orb-2"></div>
-        <div class="grid-overlay"></div>
-    </div>
-
-    <nav class="navbar">
-        <div class="container nav-content">
-            <div class="logo">
-                <span class="logo-icon">🛡️</span>
-                <span class="logo-text">AEGIS<span class="highlight">INTELLIGENCE</span></span>
-            </div>
-            <a href="https://maveera.tech" target="_blank" class="nav-link">maveera.tech</a>
+  <div class="app-shell">
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1>FortiSIEM Parser Studio</h1>
+            <span>Generate XML parsers from raw logs — client-side, secure</span>
+          </div>
         </div>
-    </nav>
+      </div>
+    </header>
 
-    <main class="container">
-        <header class="hero">
-            <div class="badge">Portfolio Project</div>
-            <h1 class="title">Unified Security Intelligence Parser</h1>
-            <p class="subtitle">A dynamic, client-side engine designed to automatically analyze raw security telemetry
-                and instantly generate fully-formatted XML Parsers for the FortiSIEM EventDB.</p>
-            <div class="tags">
-                <span class="tag">SOC Architecture</span>
-                <span class="tag">Regex Engineering</span>
-                <span class="tag">FortiSIEM Parsers</span>
-            </div>
-        </header>
+    <main class="main">
+      <section class="panel panel-input">
+        <div class="panel-header">
+          <span class="panel-number">01</span>
+          <h2>Raw Log Input</h2>
+        </div>
+        <p class="panel-desc">
+          Paste one or more sample events from FortiGate, Windows, Linux, or custom appliances.
+        </p>
 
-        <section class="card xml-section">
-            <div class="card-header">
-                <h2>1. Core XML Architecture Sample</h2>
-                <button class="copy-btn" id="copyXmlBtn">Copy Code</button>
-            </div>
-            <p class="section-desc">Utilizes Built-in Patterns and Advanced Logic Constructs
-                (<code>&lt;choose&gt;/&lt;switch&gt;</code>) to categorize complex security events.</p>
-            <div class="code-container">
-                <pre><code class="language-xml">&lt;parser xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
-  
-  &lt;patternDefinitions&gt;
-    &lt;pattern name="patAegisHeader"&gt;&lt;![CDATA[AEGIS-(?:GHOST|REPTILE|SENTINEL)]]&gt;&lt;/pattern&gt;
-    &lt;pattern name="patSeverity"&gt;&lt;![CDATA[LOW|MEDIUM|HIGH|CRITICAL]]&gt;&lt;/pattern&gt;
-  &lt;/patternDefinitions&gt;
+        <div class="form-group">
+          <label for="deviceType">Device / App Type</label>
+          <input id="deviceType" type="text" placeholder="e.g. FortiGate-Firewall, Windows-EventLog" />
+        </div>
 
-  &lt;eventFormatRecognizer&gt;&lt;![CDATA[AEGIS-\w+:]]&gt;&lt;/eventFormatRecognizer&gt;
+        <div class="form-row">
+          <div class="form-group">
+            <label for="parserName">Parser Name</label>
+            <input id="parserName" type="text" placeholder="e.g. Custom-FortiGate-Traffic" />
+          </div>
+          <div class="form-group">
+            <label for="eventRecognizer">Event Format Recognizer</label>
+            <input id="eventRecognizer" type="text" placeholder=".*" value=".*" />
+          </div>
+        </div>
 
-  &lt;parsingInstructions&gt;
-    
-    &lt;collectFieldsByRegex src="$_rawmsg"&gt;
-      &lt;regex&gt;&lt;![CDATA[&lt;_tool:patAegisHeader&gt;:\s+&lt;_time:gPatTime&gt;\s+&lt;_hostName:gPatIpV4Dot&gt;\s+&lt;_msgBody:gPatMesgBody&gt;]]&gt;&lt;/regex&gt;
-    &lt;/collectFieldsByRegex&gt;
+        <label class="checkbox">
+          <input type="checkbox" id="hasSyslogPrefix" />
+          <span>Logs include syslog header (e.g. <code>&lt;189&gt;</code>)</span>
+        </label>
 
-    &lt;choose&gt;
-      
-      &lt;when test='matches($_tool, "AEGIS-GHOST")'&gt;
-        &lt;setEventAttribute attr="eventType"&gt;Aegis-Recon-Discovery&lt;/setEventAttribute&gt;
-        &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Scan Target:\s+&lt;_destIpAddr:gPatIpV4Dot&gt;\s+Port:\s+&lt;_destPort:gPatInt&gt;\s+Status:\s+&lt;_portStatus:gPatStr&gt;]]&gt;&lt;/regex&gt;
-        &lt;/collectFieldsByRegex&gt;
-      &lt;/when&gt;
+        <div class="form-group">
+          <label class="checkbox">
+            <input type="checkbox" id="safeMapping" checked />
+            <span>Safe mapping only (predefined FortiSIEM attributes)</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" id="mapAllKeys" />
+            <span>Map all detected keys to attributes (requires custom attributes)</span>
+          </label>
+        </div>
 
-      &lt;when test='matches($_tool, "AEGIS-REPTILE")'&gt;
-        &lt;setEventAttribute attr="eventType"&gt;Aegis-Threat-Intel-Hit&lt;/setEventAttribute&gt;
-        &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Malicious Actor:\s+&lt;_srcIpAddr:gPatIpV4Dot&gt;\s+Reputation:\s+&lt;_repScore:gPatInt&gt;\s+Country:\s+&lt;_srcGeoCountry:gPatStr&gt;]]&gt;&lt;/regex&gt;
-        &lt;/collectFieldsByRegex&gt;
-      &lt;/when&gt;
+        <div class="form-group">
+          <label for="rawInput">Raw Events</label>
+          <textarea id="rawInput" rows="8" placeholder="Paste your raw log lines here..."></textarea>
+        </div>
 
-      &lt;when test='matches($_tool, "AEGIS-SENTINEL")'&gt;
-        &lt;setEventAttribute attr="eventType"&gt;Aegis-AI-Phishing-Alert&lt;/setEventAttribute&gt;
-        &lt;collectFieldsByRegex src="$_msgBody"&gt;
-          &lt;regex&gt;&lt;![CDATA[Subject:\s+&lt;_mailSubject:gPatStr&gt;\s+AI-Verdict:\s+&lt;_verdict:patSeverity&gt;\s+Confidence:\s+&lt;_conf:gPatInt&gt;]]&gt;&lt;/regex&gt;
-        &lt;/collectFieldsByRegex&gt;
-      &lt;/when&gt;
+        <button id="generateBtn" class="btn btn-primary">
+          <span class="btn-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </span>
+          Generate Parser
+        </button>
 
-    &lt;/choose&gt;
+        <div id="errorBox" class="error-box" role="alert" hidden></div>
+      </section>
 
-    &lt;setEventAttribute name="eventSeverity"&gt;
-      &lt;choose&gt;
-        &lt;when test='$_verdict == "CRITICAL" || $_repScore > 90'&gt;10&lt;/when&gt;
-        &lt;when test='$_verdict == "HIGH" || $_repScore > 75'&gt;8&lt;/when&gt;
-        &lt;otherwise&gt;2&lt;/otherwise&gt;
-      &lt;/choose&gt;
-    &lt;/setEventAttribute&gt;
+      <section class="panel panel-output">
+        <div class="panel-header">
+          <span class="panel-number">02</span>
+          <h2>Generated Parser</h2>
+          <div class="panel-actions">
+            <button id="copyFullBtn" class="btn btn-ghost" title="Copy full XML">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy Full
+            </button>
+            <button id="copyBodyBtn" class="btn btn-ghost btn-accent" title="Copy parser body only (for FortiSIEM paste)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              Copy Body Only
+            </button>
+          </div>
+        </div>
 
-  &lt;/parsingInstructions&gt;
-&lt;/parser&gt;</code></pre>
-            </div>
-        </section>
+        <div class="code-wrapper">
+          <pre class="code-block"><code id="xmlOutput"></code></pre>
+        </div>
 
-        <section class="card">
-            <h2>2. Management & Validation Plan</h2>
-            <div class="table-responsive">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Action Plan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Viewing all Parsers</strong></td>
-                            <td>Navigate to Admin > Device Support > Parsers to confirm the XML is loaded under the
-                                "User" scope.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Understanding Order</strong></td>
-                            <td>Place this parser ABOVE generic Syslog and Windows parsers. Since it has a specific
-                                AEGIS- recognizer, it should be high in the list.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Testing the Raw Log</strong></td>
-                            <td>Use the Test Window in FortiSIEM. Paste raw logs from your appliances and verify the
-                                "Passed" status matches the generated parser fields.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Disabling/Modifying</strong></td>
-                            <td>If appliance telemetry formatting changes after firmware updates, simply generate a new
-                                parser and clone/disable the previous version.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section class="card">
-            <h2>3. Appendix: Implementation Details</h2>
-            <div class="details-grid">
-                <div class="detail-box">
-                    <div class="detail-icon">🧬</div>
-                    <h3>Built-in Patterns</h3>
-                    <p>Utilized <code>gPatIpV4Dot</code> and <code>gPatTime</code>. This ensures that even if IP
-                        formatting
-                        changes slightly, the FortiSIEM compiled C++ code will still capture it flawlessly.</p>
-                </div>
-                <div class="detail-box">
-                    <div class="detail-icon">⚙️</div>
-                    <h3>Built-in Functions</h3>
-                    <p>The <code>eventSeverity</code> mapping uses a nested <code>&lt;choose&gt;</code> acting as a
-                        logic engine, converting severity strings (e.g., CRITICAL) into numerical values (10) required
-                        for the SIEM's risk engine.</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="card" id="simulator-section">
-            <h2>4. Custom Parser Generator</h2>
-            <p class="section-desc">Paste your RAW FortiGate traffic log below. The engine will analyze the key-value
-                pairs and
-                automatically generate a FortiSIEM XML Parser for it.</p>
-
-            <div class="simulator-controls">
-                <textarea id="rawLogInput" class="log-input" rows="8"
-                    placeholder="Paste your raw FortiGate traffic logs here (one per line)...
-Example:
-logver=70 timestamp=1711234567 devname=&#34;BLUEPINE_GGNE_FG101F&#34; devid=&#34;FG101FTK23000000&#34; vd=&#34;root&#34; date=&#34;2024-03-24&#34; time=&#34;10:36:07&#34; ..."></textarea>
-                <button id="generateBtn" class="primary-btn">
-                    <span class="btn-icon">⚡</span> Execute Parser
-                </button>
-            </div>
-
-            <!-- Loading Symbol -->
-            <div id="loadingContainer" class="loading-container" style="display: none;">
-                <div class="spinner"></div>
-                <p>Analyzing log structure and generating XML...</p>
-            </div>
-
-            <!-- Generated Output Area -->
-            <div id="outputContainer" class="output-container" style="display: none;">
-                <div class="card-header border-none">
-                    <h3>Generated XML Parser</h3>
-                    <button class="copy-btn" id="copyGenXmlBtn">Copy Code</button>
-                </div>
-                <div class="code-container">
-                    <pre><code class="language-xml" id="generatedXmlCode"></code></pre>
-                </div>
-
-                <div class="card-header border-none" style="margin-top: 2.5rem;">
-                    <h3>Parsed Attribute Mapping</h3>
-                </div>
-                <div class="table-responsive">
-                    <table class="data-table mapping-table" id="mappingTable">
-                        <thead>
-                            <tr>
-                                <th>Raw Log Key</th>
-                                <th>FortiSIEM Attribute</th>
-                                <th>Detected Pattern</th>
-                                <th>Sample Value</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mappingBody">
-                            <!-- Injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
+        <div class="mapping-section">
+          <h3>Detected Fields</h3>
+          <div class="table-scroll">
+            <table class="mapping-table">
+              <thead>
+                <tr>
+                  <th>Raw Key</th>
+                  <th>Pattern</th>
+                  <th>Quoted</th>
+                  <th>Sample</th>
+                </tr>
+              </thead>
+              <tbody id="mappingBody">
+                <tr class="empty-row">
+                  <td colspan="4">Paste logs and click Generate</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2026 Parser Intelligence. Designed by <a href="https://maveera.tech" target="_blank">Maveera</a>.
-        </p>
+      <p>FortiSIEM Parser Studio · Runs entirely in your browser · No data leaves your device</p>
+      <p>© 2024 <a href="https://www.maveera.tech" target="_blank">Maveera</a>. All rights reserved.</p>
     </footer>
+  </div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-xml.min.js"></script>
-    <script src="script.js"></script>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
 </body>
-
 </html>
