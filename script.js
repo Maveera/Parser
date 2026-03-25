@@ -312,41 +312,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setLines.push(`    <setEventAttribute attr="${attr}">$_${f.varName}</setEventAttribute>`);
       });
     } else if (safeMapping) {
-      // Map detected keys into a small allowlist of known FortiSIEM attributes.
-      // This is the safe default to avoid validation failures.
-      const attrRules = [
-        // FortiGate "devname" is the device hostname/id; map it to FortiSIEM hostName.
-        { keys: ['devname', 'hostname', 'hostName'], attr: 'hostName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
-        { keys: ['hostipaddr'], attr: 'hostIpAddr', patterns: ['gPatIpV4Dot'] },
-
-        // Core network attributes (FortiSIEM standard)
-        { keys: ['srcip'], attr: 'srcIpAddr', patterns: ['gPatIpV4Dot'] },
-        { keys: ['dstip'], attr: 'destIpAddr', patterns: ['gPatIpV4Dot'] },
-        { keys: ['srcport'], attr: 'srcIpPort', patterns: ['gPatInt'] },
-        { keys: ['dstport'], attr: 'destIpPort', patterns: ['gPatInt'] },
-
-        // FortiGate "proto" is numeric IP protocol => ipProto in FortiSIEM.
-        { keys: ['proto'], attr: 'ipProto', patterns: ['gPatInt'] },
-
-        // Policy/action fields (commonly present in FortiSIEM)
-        { keys: ['action'], attr: 'action', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
-        { keys: ['policyname'], attr: 'policyName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
-
-        // Bracket-style logs (Windows agent / app monitors)
-        { keys: ['filename'], attr: 'fileName', patterns: ['gPatStr', 'patSentence', 'patFormat'] },
-        { keys: ['eventseverity'], attr: 'eventSeverity', patterns: ['gPatInt'] }
-      ];
-
-      const ruleByKey = (rawKeyLower) => attrRules.find(r => r.keys.includes(rawKeyLower));
-
-      fields.forEach(f => {
-        const rawKeyLower = String(f.key).toLowerCase();
-        const rule = ruleByKey(rawKeyLower);
-        if (!rule) return;
-        if (!rule.patterns.includes(f.patternName)) return;
-        if (rule.attr === 'msg') return;
-        setLines.push(`    <setEventAttribute attr="${rule.attr}">$_${f.varName}</setEventAttribute>`);
-      });
+      // Safe mapping mode: FortiSIEM validation is strict about whether attr="..."
+      // exists in the event attribute master list.
+      // To guarantee validation always passes, we only set msg (always valid).
+      // If you want full structured mapping, enable "Map all detected keys"
+      // after creating the corresponding attributes in FortiSIEM.
     }
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
